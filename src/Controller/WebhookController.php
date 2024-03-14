@@ -2,8 +2,7 @@
 
 namespace Welp\MailchimpBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,8 +20,7 @@ class WebhookController extends AbstractController
     /**
      * Endpoint for the mailchimp list Webhook
      * https://apidocs.mailchimp.com/webhooks/
-     * @Route("/endpoint", name="webhook_index")
-     * @Method({"POST", "GET"})
+     * @Route("/endpoint", name="webhook_index", methods={"POST", "GET"})
      * @param Request $request
      * @throws AccessDeniedHttpException
      * @return JsonResponse
