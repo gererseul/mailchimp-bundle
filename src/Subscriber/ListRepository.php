@@ -333,9 +333,9 @@ class ListRepository
     {
         $emails = [];
         $members = [];
-        $offset=0;
+        $offset = 0;
         $maxresult = 200;
-        $result = $this->mailchimp->get("lists/$listId/members", ['count'=> $maxresult]);
+        $result = $this->mailchimp->get("lists/$listId/members", ['count' => $maxresult]);
 
         if (!$this->mailchimp->success()) {
             $this->throwMailchimpError($this->mailchimp->getLastResponse());
@@ -345,11 +345,11 @@ class ListRepository
         $members = array_merge($members, $result['members']);
 
         while ($offset < $totalItems) {
-            $offset+=$maxresult;
+            $offset += $maxresult;
             $result = $this->mailchimp->get("lists/$listId/members", [
-                        'count'         => $maxresult,
-                        'offset'        => $offset
-                    ]);
+                'count' => $maxresult,
+                'offset' => $offset
+            ]);
 
             if (!$this->mailchimp->success()) {
                 $this->throwMailchimpError($this->mailchimp->getLastResponse());
@@ -424,12 +424,12 @@ class ListRepository
     }
 
     /**
-    * delete merge field for a list
-    * http://developer.mailchimp.com/documentation/mailchimp/reference/lists/merge-fields/#
-    * @param string $listId
-    * @param string $mergeId
-    * @return array
-    */
+     * delete merge field for a list
+     * http://developer.mailchimp.com/documentation/mailchimp/reference/lists/merge-fields/#
+     * @param string $listId
+     * @param string $mergeId
+     * @return array
+     */
     public function deleteMergeField($listId, $mergeId)
     {
         $result = $this->mailchimp->delete("lists/$listId/merge-fields/$mergeId");
@@ -442,28 +442,28 @@ class ListRepository
     }
 
     /**
-    * Automatically configure Webhook for a list
-    * @param string $listId
-    * @param string $webhookurl
-    * @return array
-    */
+     * Automatically configure Webhook for a list
+     * @param string $listId
+     * @param string $webhookurl
+     * @return array
+     */
     public function registerMainWebhook($listId, $webhookurl)
     {
         // Configure webhook
         $subscribeWebhook = [
             'url' => $webhookurl,
             'events' => [
-                'subscribe'   => true,
+                'subscribe' => true,
                 'unsubscribe' => true,
-                'profile'     => true,
-                'cleaned'     => true,
-                'upemail'     => true,
-                'campaign'    => true
+                'profile' => true,
+                'cleaned' => true,
+                'upemail' => true,
+                'campaign' => true
             ],
             'sources' => [
-                'user'  => true,
+                'user' => true,
                 'admin' => true,
-                'api'   => false // to avoid double (infinite loop) update (update an subscriber with the API and the webhook reupdate the user, ...)
+                'api' => false // to avoid double (infinite loop) update (update an subscriber with the API and the webhook reupdate the user, ...)
             ]
         ];
 
@@ -471,12 +471,12 @@ class ListRepository
     }
 
     /**
-    * Add a new webhook to a list
-    * http://developer.mailchimp.com/documentation/mailchimp/reference/lists/webhooks/#
-    * @param string $listId
-    * @param array $webhookData
-    * @return array
-    */
+     * Add a new webhook to a list
+     * http://developer.mailchimp.com/documentation/mailchimp/reference/lists/webhooks/#
+     * @param string $listId
+     * @param array $webhookData
+     * @return array
+     */
     public function addWebhook($listId, array $webhookData)
     {
         $result = $this->mailchimp->post("lists/$listId/webhooks", $webhookData);
@@ -489,11 +489,11 @@ class ListRepository
     }
 
     /**
-    * Get webhooks of a list
-    * http://developer.mailchimp.com/documentation/mailchimp/reference/lists/webhooks/#
-    * @param string $listId
-    * @return array
-    */
+     * Get webhooks of a list
+     * http://developer.mailchimp.com/documentation/mailchimp/reference/lists/webhooks/#
+     * @param string $listId
+     * @return array
+     */
     public function getWebhooks($listId)
     {
         $result = $this->mailchimp->get("lists/$listId/webhooks");
@@ -507,31 +507,33 @@ class ListRepository
 
     /**
      * [throwMailchimpError description]
-     * @param  array  $errorResponse [description]
+     * @param array $errorResponse [description]
      * @return void
      * @throws MailchimpException [description]
      */
     private function throwMailchimpError(array $errorResponse)
     {
         $errorArray = json_decode($errorResponse['body'], true);
-        if (is_array($errorArray) && array_key_exists('errors', $errorArray)) {
-            throw new MailchimpException(
-                $errorArray['status'],
-                $errorArray['detail'],
-                $errorArray['type'],
-                $errorArray['title'],
-                $errorArray['errors'],
-                $errorArray['instance']
-            );
-        } else {
-            throw new MailchimpException(
-                $errorArray['status'],
-                $errorArray['detail'],
-                $errorArray['type'],
-                $errorArray['title'],
-                null,
-                $errorArray['instance']
-            );
+        if ($errorArray) {
+            if (is_array($errorArray) && array_key_exists('errors', $errorArray)) {
+                throw new MailchimpException(
+                    $errorArray['status'],
+                    $errorArray['detail'],
+                    $errorArray['type'],
+                    $errorArray['title'],
+                    $errorArray['errors'],
+                    $errorArray['instance']
+                );
+            } else {
+                throw new MailchimpException(
+                    $errorArray['status'],
+                    $errorArray['detail'],
+                    $errorArray['type'],
+                    $errorArray['title'],
+                    null,
+                    $errorArray['instance']
+                );
+            }
         }
     }
 }
